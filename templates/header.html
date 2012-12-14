@@ -1,0 +1,38 @@
+<div class="row">
+	<header>
+	  <div class="col col_3">&nbsp;</div>
+	  <div class="logo col_3 col"><a href="<?php echo BASE_URL ?>" style="text-decoration:none">restcomic</a></div>
+		
+	  <nav class="col_7 col">
+			<ul>
+			<?php if ($_SESSION['user_id']==0) { ?>
+				<li>
+				<?php include 'templates/login.html' ?>
+				</li>
+				<li class="last">
+				<a href="<?php echo BASE_URL.'/register' ?>">Register</a>
+				</li>
+				<!--<a href="<?php echo BASE_URL.'/login'?>">Log in</a>-->
+			<?php } else { ?>
+				<li>
+				<a href="<?php echo BASE_URL.'/user/'.$_SESSION['login'] ?>">
+				<?php echo $_SESSION['user_name']?></a>
+				</li>
+				<li>
+				<a href="<?php echo BASE_URL.'/posts/new' ?>">New Post</a>
+				</li>
+				<li class="last">
+				<a href="<?php echo BASE_URL.'/logout.php' ?>">Log out</a>
+				</li>
+			<?php } ?>
+				<!--<li><a href="#navigation">navigation 2</a></li>-->
+				<!--<li class="last"><a href="http://www.enavu.com">enavu network</a></li>-->
+			</ul>
+		</nav><!-- nav col_9 -->
+	  <div class="clear"></div><!-- clear -->
+	</header>
+</div><!-- row -->
+
+<section class="row" id="styled">
+	<div class="col col_3">&nbsp;</div>
+	<div class="col col_10">

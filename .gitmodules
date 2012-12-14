@@ -1,0 +1,6 @@
+[submodule "lib/Slim"]
+	path = lib/Slim
+	url = git://github.com/codeguy/Slim.git
+[submodule "api"]
+	path = api
+	url = git://github.com/williamho/RESTcomic.git

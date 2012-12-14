@@ -1,0 +1,60 @@
+<?php 
+foreach($posts as $index=>$post) {?>
+<article>  
+	<h1><?php echo $post->title ?></h1>
+	<span class="information">Posted by 
+	<a href="<?php echo BASE_URL.'/user/'.$post->author->login ?>">
+	<b style="color:<?php echo $post->author->group_color?>">
+	<?php echo $post->author->name ?></b> 
+	</a>
+	(<?php echo $post->author->login ?>) on 
+	<i><?php echo $post->published ?></i> 
+		with <a href="<?php echo BASE_URL.'/posts/'.$post->title_slug ?>#comments"><?php echo $post->comments->count; ?> comments</a></span>
+	<div><center><img src="<?php echo $post->image ?>"></center></div>
+	<p><?php echo $post->content ?></p>
+	<p><?php printTags($post->tags) ?></p>
+
+<h3><center>
+<?php 
+	$uri_parts = explode('/',$_SERVER['REQUEST_URI']);
+	if (substr(end($uri_parts),0,7) == 'reverse')
+		$reverse = true;
+	else
+		$reverse = false;
+
+	if (isset($comments) && (isset($newer_url) || isset($older_url))) {
+	//if (isset($page)) {
+		echo '<a href="'.BASE_URL.'/reverse">First</a> '; 
+		if ($reverse) {
+			if (!is_null($newer_url)) 
+				echo '<a href="'.$newer_url.'">Older</a> '; 
+			if (!is_null($older_url)) 
+				echo '<a href="'.$older_url.'">Newer</a> '; 
+		}
+		else {
+			if (!is_null($older_url)) 
+				echo '<a href="'.$older_url.'">Older</a> '; 
+			if (!is_null($newer_url)) 
+				echo '<a href="'.$newer_url.'">Newer</a> '; 
+		}
+		if (isset($comments))
+			echo '<a href="'.BASE_URL.'">Latest</a>'; 
+	}
+?>
+</article>
+
+</center></h3>
+<?php if (isset($comments[$index])) { ?>
+	<h2 id="comments">Comments</h2>
+	<ul class="comments">
+
+	<?php foreach($comments[$index] as $comment) { 
+		printComment($comment); 
+		printChildren($comment); 
+	} ?>
+	</ul><!-- comments -->
+	<?php include 'templates/commentbox.html' ?>
+
+<?php } ?>
+
+<?php } ?>

@@ -1,0 +1,75 @@
+<?php
+if (isset($_SESSION['returned']->response[0])) {
+	$post = $_SESSION['returned']->response[0];
+	unset($_SESSION['returned']);
+	header('Location: '.BASE_URL.'/posts/'.$post->title_slug);
+	exit;
+}
+?>
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+<?php include 'templates/header.html' ?>
+<?php if (!isset($post)) { 
+	$post = new stdClass();
+	$post->published = 'now';
+	$post->title = '';
+	$post->status = 'visible';
+	$post->commentable = true;
+	$post->image = '';
+	$post->content='';
+	$post->tags=array();
+?>
+<?php } ?>
+<form class="col_8 col" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/posts','POST',getCurrentURI()); ?>" method="post">
+<?php
+if (isset($_SESSION['returned'])) {	
+	if (!printErrors($_SESSION['returned'])) { // No errors
+		$post = $_SESSION['returned']->response[0];
+?>
+<p>Successfully posted!</p> 
+<?php 
+	}	
+	unset($_SESSION['returned']); 
+}
+?>
+<fieldset>	
+<legend>Post</legend>
+<div>
+<label for="title">Title</label>
+<input type="text" name="title" id="title" class="box_shadow" size="30" value="<?php echo $post->title ?>"/>
+</div>
+<div>
+<label for="image_url">Image URL</label>
+<input type="text" name="image_url" size="60" value="<?php echo $post->image ?>"/>
+</div>
+<div class="textarea">
+<label for="content">Content</label>
+<textarea id="content" name="content" class="box_shadow"><?php echo $post->content ?></textarea>
+</div>
+<div>
+<label for="tags">Tags (comma-separated)</label>
+<input type="text" name="tags"  value="<?php echo implode(',',$post->tags) ?>" />
+</div>
+<!--<div>
+<label for="status">Status</label>
+<select name="status">
+	<option value="0">Visible</option>
+	<option value="1">Scheduled</option>
+	<option value="2">Invisible</option>
+</select>
+</div>
+--!>
+<div>
+<label for="commentable">Commentable</label>
+<input type="checkbox" name="commentable" value="1" id="commentable" value="<?php echo $post->commentable ?>" checked>
+</div>
+<input type="submit" value="Submit" />
+</fieldset>
+</form>
+
+<div class="clear" style="height:10px;"></div>
+<?php include 'templates/footer.html' ?>
+</body>
+</html>

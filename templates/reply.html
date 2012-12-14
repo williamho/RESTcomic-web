@@ -1,0 +1,20 @@
+<?php
+if (isset($_SESSION['returned']))
+	var_dump($_SESSION['returned']);
+if (isset($_SESSION['returned']->response[0])) {
+	$comment = $_SESSION['returned']->response[0];
+	unset($_SESSION['returned']);
+	header('Location: '.BASE_URL.'/id/'.$comment->post_id.'#comment-'.$comment->parent);
+	exit;
+}
+?>
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+<?php include 'templates/header.html' ?>
+<?php include 'templates/commentbox.html' ?>
+<div class="clear" style="height:10px;"></div>
+<?php include 'templates/footer.html' ?>
+</body>
+</html>

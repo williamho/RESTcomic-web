@@ -1,0 +1,24 @@
+<?php $post_id = isset($post) ? $post->id : 0; ?>
+<form class="col_8 add_comment" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/posts/id/'.$post_id.'/comments','POST',getCurrentURI()) ?>" method="post">
+<fieldset>	
+<legend>Add a comment:</legend>
+<?php
+if (isset($_SESSION['returned'])) {	
+printErrors($_SESSION['returned']);	
+unset($_SESSION['returned']); 
+}
+?>
+<?php if ($_SESSION['user_id'] == 0) { ?>
+<div>
+<label for="name">Name</label>
+<input type="text" name="name" id="name" class="box_shadow" />
+<?php } if (isset($parent_comment_id)) { ?>
+<input type="hidden" name="parent_comment_id" value="<?php echo $parent_comment_id ?>"/>
+<?php } ?>
+<div class="textarea">
+<label for="comment">Comment</label>
+<textarea id="comment" name="content" class="box_shadow"></textarea>
+</div>
+<input type="submit" value="add comment &rarr;" />
+</fieldset>
+</form>

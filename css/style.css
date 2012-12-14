@@ -1,0 +1,12 @@
+fieldset {
+	padding: 1em;
+	font:100%/1 sans-serif;
+}
+label {
+	float:left;
+	width:150px;
+	margin-right:0.5em;
+	padding-top:0.2em;
+	text-align:right;
+}
+

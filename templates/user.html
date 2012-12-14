@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+<?php include 'templates/header.html' ?>
+	<h2 id="posts">User <?php echo $user->name ?> (<?php echo $user->login ?>) </h2>
+	<ul>
+	<li>is part of the <b style="color:<?php echo $user->group->color?>"><?php echo $user->group->name ?></b> group</li>
+	<?php foreach($user->group->permissions as $key=>$val) { ?>
+		<li><?php echo str_replace('_',' ',$key).' permissions: <b>'.$val.'</b>' ?></li>
+	<?php } ?>
+	</ul>
+
+	<hr>
+	<h3 id="posts">Recent posts by <?php echo $user->name ?> </h3>
+	<?php foreach($posts as $post) { ?>
+		<p><a href="<?php echo BASE_URL.'/posts/'.$post->title_slug ?>">
+			<?php echo $post->title ?></a> at <?php echo $post->published ?></p>
+	<?php } ?>
+	<a href="<?php echo BASE_URL.'/posts/by/'.$user->login ?>">more posts</a>
+
+	<hr>
+	<h3 id="comments">Recent comments by <?php echo $user->name ?></h3>
+	<ul class="comments">
+	<?php foreach($comments as $comment) { ?>
+		<?php printComment($comment); ?>
+	<?php } ?>
+	</ul><!-- comments -->
+	<div class="clear" style="height:10px;"></div>
+<?php include 'templates/footer.html' ?>
+</body>
+</html>
