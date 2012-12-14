@@ -1,5 +1,28 @@
 <?php 
-foreach($posts as $index=>$post) {?>
+$numposts = count($posts);
+foreach($posts as $index=>$post) {
+	$url = BASE_URL.'/api/users/id/'.$post->author->id;
+	$json = get_json_from_url($url);
+
+	if (!isset($json->response[0]))
+		die();
+	$group_id = $json->response[0]->group->id;
+
+	$edit_perm = $_SESSION['group']->permissions->edit_post;
+	$editable = false;
+	switch($edit_perm) {
+	case 'own':
+		if ($_SESSION['user_id'] == $post->author->id)
+			$editable = true;
+		break;
+	case 'group':
+		if ($_SESSION['group']->group_id == $group_id)
+			$editable = true;
+		break;
+	case 'yes':
+		$editable = true;
+	}
+?>
 <article>  
 	<h1><?php echo $post->title ?></h1>
 	<span class="information">Posted by 
@@ -9,22 +32,31 @@ foreach($posts as $index=>$post) {?>
 	</a>
 	(<?php echo $post->author->login ?>) on 
 	<i><?php echo $post->published ?></i> 
-		with <a href="<?php echo BASE_URL.'/posts/'.$post->title_slug ?>#comments"><?php echo $post->comments->count; ?> comments</a></span>
+		with <a href="<?php echo BASE_URL.'/posts/'.$post->title_slug ?>#comments"><?php echo $post->comments->count; ?> comments</a>
+		
+	<?php 
+	// Check if user can edit this post
+	if ($editable)
+		echo '[<a href="'.BASE_URL.'/id/'.$post->id.'/edit">edit</a>]';
+	?>
+
+	</span>
 	<div><center><img src="<?php echo $post->image ?>"></center></div>
 	<p><?php echo $post->content ?></p>
 	<p><?php printTags($post->tags) ?></p>
 
-<h3><center>
-<?php 
+<?php
+	if ($index == $numposts-1) {
 	$uri_parts = explode('/',$_SERVER['REQUEST_URI']);
 	if (substr(end($uri_parts),0,7) == 'reverse')
 		$reverse = true;
 	else
 		$reverse = false;
 
-	if (isset($comments) && (isset($newer_url) || isset($older_url))) {
-	//if (isset($page)) {
-		echo '<a href="'.BASE_URL.'/reverse">First</a> '; 
+	if ((isset($newer_url) || isset($older_url))) {
+		echo '<h3><center>';
+		if (isset($comments)) 
+			echo '<a href="'.BASE_URL.'/reverse">First</a> '; 
 		if ($reverse) {
 			if (!is_null($newer_url)) 
 				echo '<a href="'.$newer_url.'">Older</a> '; 
@@ -37,13 +69,14 @@ foreach($posts as $index=>$post) {?>
 			if (!is_null($newer_url)) 
 				echo '<a href="'.$newer_url.'">Newer</a> '; 
 		}
-		if (isset($comments))
+		if (isset($comments)) 
 			echo '<a href="'.BASE_URL.'">Latest</a>'; 
+	echo '</center></h3>';
+	}
 	}
 ?>
 </article>
 
-</center></h3>
 <?php if (isset($comments[$index])) { ?>
 	<h2 id="comments">Comments</h2>
 	<ul class="comments">

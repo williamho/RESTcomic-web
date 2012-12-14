@@ -20,9 +20,15 @@ if (isset($_SESSION['returned']->response[0])) {
 	$post->image = '';
 	$post->content='';
 	$post->tags=array();
+
+	$apiquery = getAPIQuery('/api/posts','POST',getCurrentURI()); 
 ?>
-<?php } ?>
-<form class="col_8 col" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/posts','POST',getCurrentURI()); ?>" method="post">
+<?php }
+	else { 
+		$apiquery = getAPIQuery('/api/posts/id/'.$post->id,'PUT',getCurrentURI()); 
+	} ?>
+
+<form class="col_8 col" action="<?php echo BASE_URL.'/oauth.php?'.$apiquery ?>" method="post">
 <?php
 if (isset($_SESSION['returned'])) {	
 	if (!printErrors($_SESSION['returned'])) { // No errors

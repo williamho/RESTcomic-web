@@ -2,7 +2,7 @@
 	<header>
 	  <div class="col col_3">&nbsp;</div>
 	  <div class="logo col_3 col"><a href="<?php echo BASE_URL ?>" style="text-decoration:none">restcomic</a></div>
-		
+
 	  <nav class="col_7 col">
 			<ul>
 			<?php if ($_SESSION['user_id']==0) { ?>
@@ -18,9 +18,11 @@
 				<a href="<?php echo BASE_URL.'/user/'.$_SESSION['login'] ?>">
 				<?php echo $_SESSION['user_name']?></a>
 				</li>
+				<?php if ($_SESSION['group']->permissions->make_post != 'no') { ?>
 				<li>
 				<a href="<?php echo BASE_URL.'/posts/new' ?>">New Post</a>
 				</li>
+				<?php } ?>
 				<li class="last">
 				<a href="<?php echo BASE_URL.'/logout.php' ?>">Log out</a>
 				</li>

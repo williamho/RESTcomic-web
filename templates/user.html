@@ -3,11 +3,20 @@
 <?php include 'templates/head.html' ?>
 <body>
 <?php include 'templates/header.html' ?>
-	<h2 id="posts">User <?php echo $user->name ?> (<?php echo $user->login ?>) </h2>
+	<h2 id="posts"><?php echo $user->name ?> (<?php echo $user->login ?>) 
+	
+	<?php if ($_SESSION['user_id'] == $user->id) { ?>
+	[<a href="<?php echo BASE_URL.'/userinfo' ?>">edit</a>]
+	<?php } ?></h2>
 	<ul>
 	<li>is part of the <b style="color:<?php echo $user->group->color?>"><?php echo $user->group->name ?></b> group</li>
+	<ul>
 	<?php foreach($user->group->permissions as $key=>$val) { ?>
 		<li><?php echo str_replace('_',' ',$key).' permissions: <b>'.$val.'</b>' ?></li>
+	<?php } ?>
+	</ul>
+	<?php if ($user->website != '') { ?>
+	<li>Website: <?php echo htmlspecialchars($user->website) ?></li>
 	<?php } ?>
 	</ul>
 

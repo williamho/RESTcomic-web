@@ -37,9 +37,35 @@ $app->get('/posts/by/:name', function($name) use($app) {
 	render_posts_from_url($url,$page,'Posts by '.$name.' (page '.$page.')');
 });
 
+$app->get('/id/:id/edit', function($id) use($app) {
+	$url = BASE_URL.'/api/posts/id/'.$id.'?format=markdown';
+	$json = get_json_from_url($url);
+	if (isset($json->response[0]))
+		$post = $json->response[0];
+	$data = array(
+		'title'=>'Edit post',
+		'post'=>$post
+	);
+	$app->render('makepost.html',$data);
+});
+
 $app->get('/register', function() use($app) {
 	$data = array('title'=>'Register');
 	$app->render('register.html',$data);
+});
+
+$app->get('/userinfo', function() use($app) {
+	$url = BASE_URL.'/api/users/id/'.$_SESSION['user_id'].'?getemail=true';
+	$json = get_json_from_url($url);
+
+	if (!isset($json->response[0]))
+		die();
+
+	$data = array(
+		'title'=>'Change user info',
+		'user'=>$json->response[0]
+	);
+	$app->render('edituser.html',$data);
 });
 
 $app->get('/reverse', function() use($app) {
@@ -89,15 +115,6 @@ $app->post('/login', function() {
 });
 
 $app->run();
-
-function get_json_from_url($url) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	$data = curl_exec($ch);
-	curl_close($ch);
-	return json_decode($data);
-}
 
 function get_latest_post() {
 	get_post_by_id(0);

@@ -26,11 +26,14 @@ if (!($user = $stmt->fetchObject()))
 	invalidLogin();
 $hash = $user->password;
 if (User::$hasher->checkPassword($pass,$hash)) {
+	$json = get_json_from_url(BASE_URL.'/api/users/id/'.$user->user_id);
+
 	setUserInfo(
 		$user->user_id, 
 		$user->login, 
 		$user->name, 
-		$user->api_key
+		$user->api_key,
+		$json->response[0]->group
 	);
 }
 else

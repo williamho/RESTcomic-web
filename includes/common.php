@@ -3,8 +3,10 @@ session_start();
 
 define('BASE_URL',getCurrentDir());
 
-if (!isset($_SESSION['user_id']))
-	setUserInfo(0,'unregistered','','');
+if (!isset($_SESSION['user_id'])) {
+	$json = get_json_from_url(BASE_URL.'/api/users/id/0');
+	setUserInfo(0,'unregistered','','',$json->response[0]->group);
+}
 
 function getBaseURL() {
 	$scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") ?
@@ -28,11 +30,12 @@ function getCurrentDir() {
 	return substr($pageURL,0,$pos);
 }
 
-function setUserInfo($id,$login,$name,$api_key) {
+function setUserInfo($id,$login,$name,$api_key,$group) {
 	$_SESSION['user_id'] = $id;
 	$_SESSION['login'] = $login;
 	$_SESSION['user_name'] = $name;
 	$_SESSION['api_key'] = $api_key;
+	$_SESSION['group'] = $group;
 }
 
 function getAPIQuery($uri,$method,$return) {
@@ -91,5 +94,14 @@ function printTags($tagsArray) {
 	foreach ($tagsArray as $tag) {
 		echo '<a href="'.BASE_URL.'/tagged/'.$tag.'">'.$tag.'</a> ';
 	}
+}
+
+function get_json_from_url($url) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$data = curl_exec($ch);
+	curl_close($ch);
+	return json_decode($data);
 }
 

@@ -1,3 +1,9 @@
+<?php
+	if ($_SESSION['user_id'] != 0) {
+		header('Location: '.BASE_URL);
+		exit;
+	}
+?>
 <!DOCTYPE HTML>
 <html>
 <?php include 'templates/head.html' ?>
@@ -40,7 +46,6 @@
 </div>
 </fieldset>
 </form>
-
 <div class="col col_3">
 <?php
 if (isset($_SESSION['returned'])) {	
