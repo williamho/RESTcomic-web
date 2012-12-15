@@ -63,10 +63,27 @@ $app->get('/userinfo', function() use($app) {
 
 	$data = array(
 		'title'=>'Change user info',
-		'user'=>$json->response[0]
+		'user'=>$json->response[0],
+		'editgroup'=>false
 	);
 	$app->render('edituser.html',$data);
 });
+
+$app->get('/user/id/:id/edit', function($id) use($app) {
+	$url = BASE_URL.'/api/users/id/'.$id.'?getemail=true';
+	$json = get_json_from_url($url);
+
+	if (!isset($json->response[0]))
+		die();
+
+	$data = array(
+		'title'=>'Change user info',
+		'user'=>$json->response[0],
+		'editgroup'=>true
+	);
+	$app->render('edituser.html',$data);
+});
+
 
 $app->get('/reverse', function() use($app) {
 	$page = $app->request()->get('page');	

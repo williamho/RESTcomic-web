@@ -1,0 +1,68 @@
+<?php
+if ($_SESSION['user_id'] == 0) {
+	header('Location: '.BASE_URL.'/register');
+	exit;
+}
+if (isset($_SESSION['returned'])) {	
+	if (!printErrors($_SESSION['returned']) && isset($_SESSION['returned']->response[0])) { // No errors
+		if ($_SESSION['returned']->response[0]->id == $_SESSION['user_id'])
+			$_SESSION['user_name'] = $_SESSION['returned']->response[0]->name;
+		header('Location: '.BASE_URL.'/user/'.$_SESSION['returned']->response[0]->login);
+		unset($_SESSION['returned']); 
+		exit;
+	}	
+	unset($_SESSION['returned']); 
+}
+?>
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+
+<?php include 'templates/header.html' ?>
+
+<form class="col col_6" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/users/id/'.$user->id,'PUT',getCurrentURI()) ?>" method="post">
+<fieldset>	
+<legend>Change Info</legend>
+<div>
+<label for='name' >Display name</label>
+<input type='text' name='name' id='name' maxlength="32" class="box_shadow" value="<?php echo $user->name?>"/>
+</div>
+<div>
+<!--
+<label for="password" >Password *</label>
+<input type="password" name="password" id="password" class="box_shadow" required />
+</div>
+<div>
+<label for="confirmpassword" >Confirm Password *</label>
+<input type="password" name="confirmpassword" id="confirmpassword" class="box_shadow" required />
+</div>
+--!>
+<div>
+<label for='email' >Email</label>
+<input type='text' name='email' id='email' maxlength="100" class="box_shadow" value="<?php echo $user->email ?>"/>
+</div>
+<div>
+<label for='website' >Website</label>
+<input type='text' name='website' id='website' maxlength="1024" class="box_shadow" value="<?php echo $user->website?>"/>
+</div>
+
+<?php if ($editgroup && $_SESSION['group']->admin) {?>
+<label for='group' >Group ID</label>
+<input type='text' name='group_id' id='group_id' maxlength="3" class="box_shadow" value="<?php echo $user->group->id?>" size="3"/>
+</div>
+<?php } ?>
+
+<div>
+<input type="submit" value="Submit &rarr;" />
+</div>
+</fieldset>
+</form>
+
+<div class="col col_3">
+</div>
+
+<div class="clear" style="height:10px;"></div>
+<?php include 'templates/footer.html' ?>
+</body>
+</html>

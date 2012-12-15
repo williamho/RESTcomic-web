@@ -4,11 +4,13 @@
 <body>
 <?php include 'templates/header.html' ?>
 	<h2 id="posts"><?php echo $user->name ?> (<?php echo $user->login ?>) 
-	
-	<?php if ($_SESSION['user_id'] == $user->id) { ?>
-	[<a href="<?php echo BASE_URL.'/userinfo' ?>">edit</a>]
+	<?php if ($_SESSION['group']->admin) { ?>
+		[<a href="<?php echo BASE_URL.'/user/id/'.$user->id.'/edit' ?>">edit</a>]
+	<?php } else if ($_SESSION['user_id'] == $user->id) { ?>
+		[<a href="<?php echo BASE_URL.'/userinfo' ?>">edit</a>]
 	<?php } ?></h2>
 	<ul>
+	<li>User #<?php echo $user->id ?></li>
 	<li>is part of the <b style="color:<?php echo $user->group->color?>"><?php echo $user->group->name ?></b> group</li>
 	<ul>
 	<?php foreach($user->group->permissions as $key=>$val) { ?>
