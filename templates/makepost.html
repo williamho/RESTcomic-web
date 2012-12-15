@@ -1,4 +1,9 @@
 <?php
+if (isset($_SESSION['returned']->errors)) {
+	printErrors($_SESSION['returned']);
+	die();
+}
+
 if (isset($_SESSION['returned']->response[0])) {
 	$post = $_SESSION['returned']->response[0];
 	unset($_SESSION['returned']);
@@ -69,7 +74,7 @@ if (isset($_SESSION['returned'])) {
 --!>
 <div>
 <label for="commentable">Commentable</label>
-<input type="checkbox" name="commentable" value="1" id="commentable" value="<?php echo $post->commentable ?>" checked>
+<input type="checkbox" name="commentable" value="1" id="commentable" value="commentable" checked="<?php echo $post->commentable ?>">
 </div>
 <input type="submit" value="Submit" />
 </fieldset>

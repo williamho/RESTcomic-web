@@ -72,22 +72,66 @@ function printChildren($parent) {
 	echo '</ul>';
 }
 
+// this is a huge mess of a function
 function printComment($comment) {
 	echo '<li><span class="comment_information" '.
 		'id="comment-'.$comment->id.'">'.
+		// The icon
 		'<img src="'.$comment->author->icon.
 		'" style="vertical-align:middle"> '. 
+
+		// The name
 		'<a href="'.BASE_URL.'/user/'.$comment->author->login.'">'.
 		'<b style="color:'.$comment->author->group_color.'">'.
-		$comment->author->name.
-		'</b></a> ('.$comment->author->login.') at <i>'.
-		$comment->timestamp.'</i> '.
+		$comment->author->name .'</b></a> '.
+
+		// The login
+		'('.$comment->author->login.') '.
+
+		// The timestamp
+		'at <i>'.$comment->timestamp.'</i> '.
+
+		// The page anchor
 		'<a href="'.BASE_URL.'/id/'.$comment->post_id.
 		'#comment-'.$comment->id.'">#</a> '.
-		'[<a href="#" onClick="window.open(\''.
-		BASE_URL.'/reply/'.$comment->id.'\');">Reply</a>'.']'.
-		'</span><p>'. 
-		$comment->content .'</p>';
+
+		// The reply link
+		'<a href="#comment-'.$comment->id.'" onClick="javascript:void window.open(\''.
+		BASE_URL.'/reply/'.$comment->id.'\', '.'\'_blank\', '.
+		"'width=500,height=230,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1'".
+		');">Reply</a> '.
+
+		// Edit
+		(userCanEditComment($comment) ? 'Edit ' : '') . 
+		
+
+		'</span>'. 
+
+		// The content
+		'<p>' . $comment->content .'</p>';
+}
+
+function userCanEditComment($comment) {
+	$edit_perm = $_SESSION['group']->permissions->edit_comment;
+	$editable = false;
+	switch($edit_perm) {
+	case 'own':
+		if ($_SESSION['user_id'] == $comment->author->id)
+			$editable = true;
+		break;
+	case 'group':
+		$json = getUsersByIds($comment->author->id);
+		if (!isset($json->response[0]))
+			return false;
+
+		$group_id = $json->response[0]->group->id;
+		if ($_SESSION['group']->id == $group_id)
+			$editable = true;
+		break;
+	case 'yes':
+		$editable = true;
+	}
+	return $editable;
 }
 
 function printTags($tagsArray) {

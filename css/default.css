@@ -18,3 +18,7 @@ h2 {border-bottom:1px dashed #ccc;}
 .comments li .comment_information {font-family:Verdana, Geneva, sans-serif; border-bottom:1px dashed #ccc; margin-bottom:5px; display:block; color:#666;}
 
 footer {text-align:center; color:#666; font-size:0.9em; padding:4px 0px; border-top:1px solid #525252;}
+
+
+img { max-width: 100%; }
+

@@ -30,13 +30,15 @@ $app->get('/posts/:slug', function($slug) {
 	render_post_from_api($response);
 });
 
-$app->get('/posts/by/:name', function($name) use($app) {
+$app->get('/posts/by/:login', function($login) use($app) {
 	$page = $app->request()->get('page');	
 	if ($page < 1)
 		$page = 1;
 		
-	$url = BASE_URL.'/api/posts/by_author/'.$name.'?reverse=true&page='.$page;
-	render_posts_from_url($url,$page,'Posts by '.$name.' (page '.$page.')');
+	$response = getPostsByAuthorLogin($login,true,0,$page);
+	render_posts_from_api($response,$page,'Posts by '.$login.' (page '.$page.')',false);
+	//$url = BASE_URL.'/api/posts/by_author/'.$name.'?reverse=true&page='.$page;
+	//render_posts_from_url($url,$page,'Posts by '.$name.' (page '.$page.')');
 });
 
 $app->get('/id/:id/edit', function($id) use($app) {
@@ -113,7 +115,7 @@ $app->get('/id/:id', function($id) {
 });
 
 $app->get('/user/id/:id', function($id) {
-	render_user_info('id/'.$id);
+	render_user_info_id($id);
 });
 
 $app->get('/user/:login', function($login) {
@@ -204,22 +206,45 @@ function render_posts_from_url($url,$page,$title='',$showcomments=false) {
 	render_posts_from_api($json,$page,$title,$showcomments);
 }
 
-function render_user_info($login) {
+function render_user_info_id($id) {
 	global $app;
-	$url = BASE_URL.'/api/users/'.$login;
-	$users = get_json_from_url($url);
+
+	$users = getUsersById($id);
 	$users = $users->response;
 
 	if (empty($users))
-		die();
+		die('No such user');
 	$user = $users[0];
 
-	$url = BASE_URL.'/api/posts/by_author/'.$login.'?reverse=true';
-	$posts = get_json_from_url($url);
+	$posts = getPostsByAuthorId($id);
 	$posts = $posts->response;
 
-	$url = BASE_URL.'/api/comments/by_author/'.$login.'?reverse=true';
-	$comments = get_json_from_url($url);
+	$comments = getCommentsByAuthorId($id);
+	$comments = $comments->response;
+
+	$data = array(
+		'title' => $user->name,
+		'user' => $user,
+		'posts' => $posts,
+		'comments' => $comments
+	);
+	$app->render('user.html',$data);
+}
+
+function render_user_info($login) {
+	global $app;
+
+	$users = getUserByLogin($login);
+	$users = $users->response;
+
+	if (empty($users))
+		die('No such user');
+	$user = $users[0];
+
+	$posts = getPostsByAuthorLogin($login);
+	$posts = $posts->response;
+
+	$comments = getCommentsByAuthorLogin($login);
 	$comments = $comments->response;
 
 	$data = array(

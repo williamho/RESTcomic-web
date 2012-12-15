@@ -6,7 +6,7 @@ foreach($posts as $index=>$post) {
 	$json = getUsersByIds($post->author->id);
 
 	if (!isset($json->response[0]))
-		die();
+		die('No such user');
 	$group_id = $json->response[0]->group->id;
 
 	$edit_perm = $_SESSION['group']->permissions->edit_post;
@@ -17,7 +17,7 @@ foreach($posts as $index=>$post) {
 			$editable = true;
 		break;
 	case 'group':
-		if ($_SESSION['group']->group_id == $group_id)
+		if ($_SESSION['group']->id == $group_id)
 			$editable = true;
 		break;
 	case 'yes':
@@ -42,7 +42,7 @@ foreach($posts as $index=>$post) {
 	?>
 
 	</span>
-	<div><center><img src="<?php echo $post->image ?>"></center></div>
+	<div><center><a href="<?php echo $post->image ?>"><img src="<?php echo $post->image ?>"></a></center></div>
 	<p><?php echo $post->content ?></p>
 	<p><?php printTags($post->tags) ?></p>
 
