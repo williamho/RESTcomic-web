@@ -3,6 +3,8 @@ require_once 'includes/common.php';
 require 'lib/Slim/Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
 
+require_once 'api/includes/config.php';
+
 $app = new \Slim\Slim();
 $app->config(array('templates.path'=>'templates'));
 
@@ -13,9 +15,9 @@ $app->get('/', function() use($app) {
 		$page = 1;
 	if (is_null($perpage))
 		$perpage = 1;
-		
-	$url = BASE_URL.'/api/posts?reverse=true&page='.$page.'&perpage='.$perpage;
-	render_posts_from_url($url,$page,'Posts (page '.$page.')',true);
+
+	$response = getPostsBetweenIds(null,null,true,1,$page);
+	render_posts_from_api($response,$page,'Posts (page '.$page.')',true);
 });
 
 $app->get('/posts/new', function()  use($app) {
@@ -24,8 +26,8 @@ $app->get('/posts/new', function()  use($app) {
 });
 
 $app->get('/posts/:slug', function($slug) {
-	$url = BASE_URL.'/api/posts/'.$slug;
-	render_post_from_url($url);
+	$response = getPostBySlug($slug);
+	render_post_from_api($response);
 });
 
 $app->get('/posts/by/:name', function($name) use($app) {
@@ -92,9 +94,9 @@ $app->get('/reverse', function() use($app) {
 		$page = 1;
 	if (is_null($perpage))
 		$perpage = 1;
-		
-	$url = BASE_URL.'/api/posts?reverse=false&page='.$page.'&perpage='.$perpage;
-	render_posts_from_url($url,$page,'Posts (page '.$page.')',true);
+
+	$response = getPostsBetweenIds(null,null,true,1,$page);
+	render_posts_from_api($response,$page,'Posts (page '.$page.')',true);
 });
 
 $app->get('/reply/:comment_id', function($comment_id) use($app) {
@@ -106,8 +108,8 @@ $app->get('/reply/:comment_id', function($comment_id) use($app) {
 });
 
 $app->get('/id/:id', function($id) {
-	$url = BASE_URL.'/api/posts/id/'.$id;
-	render_post_from_url($url);
+	$response = getPostsByIds($id);
+	render_post_from_api($response);
 });
 
 $app->get('/user/id/:id', function($id) {
@@ -123,18 +125,30 @@ $app->get('/tagged/:tags', function($tags) use($app) {
 	if ($page < 1)
 		$page = 1;
 		
-	$url = BASE_URL.'/api/posts/tagged/'.$tags.'?reverse=true&page='.$page;
-	render_posts_from_url($url,$page,'Tagged '.$tags.' (page '.$page.')');
-});
+	$response = getPostsTagged($tags);
+	render_posts_from_api($response,$page,'Tagged '.$tags.' (page '.$page.')',false);
 
-$app->post('/login', function() {
-	
+	//$url = BASE_URL.'/api/posts/tagged/'.$tags.'?reverse=true&page='.$page;
+	//render_posts_from_url($url,$page,'Tagged '.$tags.' (page '.$page.')');
 });
 
 $app->run();
 
-function get_latest_post() {
-	get_post_by_id(0);
+function render_post_from_api($api) {
+	global $app;
+
+	if (isset($api->response[0]))
+		$post = $api->response[0];
+	else
+		die("Post doesn't exist");
+	$comments = getCommentsByPostId($post->id)->response;
+
+	$data = array(
+		'title' => $post->title,
+		'post' => $post,
+		'comments' => $comments
+	);
+	$app->render('post.html',$data);
 }
 
 function render_post_from_url($url) {
@@ -144,7 +158,7 @@ function render_post_from_url($url) {
 	if (isset($posts->response[0]))
 		$post = $posts->response[0];
 	else
-		die();
+		die("Post doesn't exist");
 	$comments_json = get_json_from_url($post->comments->down);
 
 	$data = array(
@@ -155,24 +169,20 @@ function render_post_from_url($url) {
 	$app->render('post.html',$data);
 }
 
-function render_posts_from_url($url,$page,$title='',$showcomments=false) {
+function render_posts_from_api($api,$page,$title,$showcomments=false) {
 	global $app;
-	$json = get_json_from_url($url);
 
-	if (isset($json->response[0]))
-		$posts = $json->response;
+	if (isset($api->response[0]))
+		$posts = $api->response;
 	else
-		die();
+		die("Posts don't exist");
 
-	$newer_url = (is_null($json->meta->prev)) ? null : '?page='.($page-1);
-	$older_url = (is_null($json->meta->next)) ? null : '?page='.($page+1);
+	$newer_url = (is_null($api->meta->prev)) ? null : '?page='.($page-1);
+	$older_url = (is_null($api->meta->next)) ? null : '?page='.($page+1);
 
 	if ($showcomments) {
-		$comments = array();
-		foreach($posts as $post) {
-			$comments_json = get_json_from_url($post->comments->down);
-			array_push($comments, $comments_json->response);
-		}
+		$comments = array(getCommentsByPostId($posts[0]->id)->response);
+		//array(get_json_from_url($posts[0]->comments->down)->response);
 	}
 
 	$data = array(
@@ -183,8 +193,15 @@ function render_posts_from_url($url,$page,$title='',$showcomments=false) {
 	);
 	if ($showcomments)
 		$data['comments'] = $comments;
-
+	
 	$app->render('multipost.html',$data);
+}
+
+function render_posts_from_url($url,$page,$title='',$showcomments=false) {
+	global $app;
+	$json = get_json_from_url($url);
+
+	render_posts_from_api($json,$page,$title,$showcomments);
 }
 
 function render_user_info($login) {

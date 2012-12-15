@@ -1,8 +1,9 @@
 <?php 
 $numposts = count($posts);
 foreach($posts as $index=>$post) {
-	$url = BASE_URL.'/api/users/id/'.$post->author->id;
-	$json = get_json_from_url($url);
+	//$url = BASE_URL.'/api/users/id/'.$post->author->id;
+	//$json = get_json_from_url($url);
+	$json = getUsersByIds($post->author->id);
 
 	if (!isset($json->response[0]))
 		die();
