@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+<?php include 'templates/header.html' ?>
+
+<table border="0">
+	<tr>
+	<th>ID</th>
+	<th>Name</th>
+	<th>Admin</th>
+	<th>Make posts</th>
+	<th>Edit posts</th>
+	<th>Make comments</th>
+	<th>Edit comments</th>
+	</tr>
+<?php 
+function perm_parse($p) {
+	return $p=='no' ? '' : $p;
+}
+
+foreach ($groups as $group) { ?>
+	<tr>
+	<td><?php echo $group->id ?></td>
+	<td><?php echo $group->name ?></td>
+	<td><?php echo $group->admin ? 'yes' : '' ?></td>
+	<td><?php echo perm_parse($group->permissions->make_post) ?></td>
+	<td><?php echo perm_parse($group->permissions->edit_post) ?></td>
+	<td><?php echo perm_parse($group->permissions->make_comment) ?></td>
+	<td><?php echo perm_parse($group->permissions->edit_comment) ?></td>
+	</tr>
+<?php }?>
+</table>
+
+<div class="clear" style="height:10px;"></div>
+<?php include 'templates/footer.html' ?>
+</body>
+</html>
+
+

@@ -74,7 +74,6 @@ $app->get('/userinfo', function() use($app) {
 });
 
 $app->get('/user/id/:id/edit', function($id) use($app) {
-	$url = BASE_URL.'/api/users/id/'.$id.'?getemail=true';
 	$json = getUsersByIds($id,true);
 
 	if (!isset($json->response[0]))
@@ -89,6 +88,15 @@ $app->get('/user/id/:id/edit', function($id) use($app) {
 	$app->render('edituser.html',$data);
 });
 
+$app->get('/groups', function() use($app) {
+	$json = getGroups();
+	$groups = $json->response;
+	$data = array(
+		'title'=>'Groups',
+		'groups'=>$groups
+	);
+	$app->render('groups.html',$data);
+});
 
 $app->get('/reverse', function() use($app) {
 	$page = $app->request()->get('page');	
