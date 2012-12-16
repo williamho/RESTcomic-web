@@ -1,24 +1,82 @@
-<?php $post_id = isset($post) ? $post->id : 0; ?>
-<form class="col_8 add_comment" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/posts/id/'.$post_id.'/comments','POST',getCurrentURI()) ?>" method="post">
+<?php 
+if (!isset($editcomment))
+	$editcomment=false;
+if (!isset($replycomment))
+	$replycomment=false;
+if (!isset($deletecomment))
+	$deletecomment=false;
+
+$post_id = isset($post) ? $post->id : 0;
+if (!$editcomment) { 
+	$oldcomment = new stdClass();
+	$oldcomment->author = new stdClass();
+	$oldcomment->author->name = '';
+	$oldcomment->content = '';
+}
+if ($replycomment) {
+	$apiquery = getAPIQuery('/api/posts/id/'.$post_id.'/comments','POST',getCurrentURI()); 
+}
+else if ($editcomment) {
+	$oldcomment = $comment;
+	$apiquery = getAPIQuery('/api/comments/id/'.$comment->id,'PUT',getCurrentURI()); 
+}
+else if ($deletecomment) {
+	$oldcomment = $comment;
+	$apiquery = getAPIQuery('/api/comments/id/'.$comment->id,'DELETE',getCurrentURI()); 
+}
+else {
+	$apiquery = getAPIQuery('/api/posts/id/'.$post_id.'/comments','POST',getCurrentURI()); 
+}
+?>
+<div class="col_8" style="margin:0 auto;">
+<form class="col_8 add_comment" action="<?php echo BASE_URL.'/oauth.php?'.$apiquery ?>" method="post">
 <fieldset>	
-<legend>Add a comment:</legend>
+<legend>
+<?php 
+if ($editcomment) 
+	echo 'Edit comment'; 
+elseif ($replycomment)
+	echo 'Reply to comment';
+elseif ($deletecomment)
+	echo 'Really delete this comment?';
+else
+	echo 'Add a comment';
+?>
+</legend>
 <?php
 if (isset($_SESSION['returned'])) {	
-printErrors($_SESSION['returned']);	
-unset($_SESSION['returned']); 
+	printErrors($_SESSION['returned']);	
+	unset($_SESSION['returned']); 
 }
+
+if ($deletecomment)
+	echo '<p>Note: replies to this comment will not be deleted</p>';
+
+if ($editcomment || $replycomment || $deletecomment) {
+	echo '<ul class="comments">';
+	printComment($comment);
+	echo '</ul>';
+	//echo '<div><label>Original comment</label><span>'.$comment->content.'</span></div>';
+}
+
 ?>
 <?php if ($_SESSION['user_id'] == 0) { ?>
 <div>
 <label for="name">Name</label>
-<input type="text" name="name" id="name" class="box_shadow" />
-<?php } if (isset($parent_comment_id)) { ?>
-<input type="hidden" name="parent_comment_id" value="<?php echo $parent_comment_id ?>"/>
-<?php } ?>
+<input type="text" name="name" id="name" class="box_shadow" value="<?php echo $oldcomment->author->name ?>" />
+<?php } 
+if ($replycomment) { ?>
+<input type="hidden" name="parent_comment_id" value="<?php echo $comment->id ?>"/>
+<?php } 
+if ($deletecomment) {?>
+<input type="submit" value="Delete &rarr;" />
+<?php } else {?>
 <div class="textarea">
 <label for="comment">Comment</label>
-<textarea id="comment" name="content" class="box_shadow"></textarea>
+<textarea id="comment" name="content" class="box_shadow"><?php echo $oldcomment->content ?></textarea>
 </div>
-<input type="submit" value="add comment &rarr;" />
+<input type="submit" value="Submit &rarr;" />
+<?php } ?>
 </fieldset>
 </form>
+</div>

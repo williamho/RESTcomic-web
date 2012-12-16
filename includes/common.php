@@ -74,40 +74,48 @@ function printChildren($parent) {
 
 // this is a huge mess of a function
 function printComment($comment) {
+	$popup_info = "'width=500,height=300,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1'";
+
 	echo '<li><span class="comment_information" '.
 		'id="comment-'.$comment->id.'">'.
 		// The icon
 		'<img src="'.$comment->author->icon.
-		'" style="vertical-align:middle"> '. 
+		'" style="float:left; margin: 0 5px 0 0;"> '. 
 
 		// The name
-		'<a href="'.BASE_URL.'/user/'.$comment->author->login.'">'.
-		'<b style="color:'.$comment->author->group_color.'">'.
+		'<a href="'.BASE_URL.'/user/'.$comment->author->login.'" style="text-decoration:none;">'.
+		'<b style="color:'.$comment->author->group_color.'; ">'.
 		$comment->author->name .'</b></a> '.
 
 		// The login
 		'('.$comment->author->login.') '.
 
-		// The timestamp
-		'at <i>'.$comment->timestamp.'</i> '.
-
 		// The page anchor
 		'<a href="'.BASE_URL.'/id/'.$comment->post_id.
-		'#comment-'.$comment->id.'">#</a> '.
+		'#comment-'.$comment->id.'" class="sym" title="jump to comment">#</a> '.
 
 		// The reply link
 		'<a href="#comment-'.$comment->id.'" onClick="javascript:void window.open(\''.
-		BASE_URL.'/reply/'.$comment->id.'\', '.'\'_blank\', '.
-		"'width=500,height=230,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1'".
-		');">Reply</a> '.
+		BASE_URL.'/reply/'.$comment->id.'\', '.'\'_blank\', '. $popup_info .
+		');" class="sym" title="reply">&#9166;</a> ';
 
-		// Edit
-		(userCanEditComment($comment) ? 'Edit ' : '') . 
+	// Edit
+	if (userCanEditComment($comment)) {
+	echo '<a href="#comment-'.$comment->id.'" onClick="javascript:void window.open(\''.
+			BASE_URL.'/editcomment/'.$comment->id.'\', '.'\'_blank\', '. $popup_info .
+			');" class="sym" title="edit">&#9997</a> ';
+
+	echo '<a href="#comment-'.$comment->id.'" onClick="javascript:void window.open(\''.
+			BASE_URL.'/deletecomment/'.$comment->id.'\', '.'\'_blank\', '. $popup_info .
+			');" class="sym" title="delete">&#215;</a> ';
+	}
 		
 
+	// The timestamp
+	echo '<br/>at <i>'.$comment->timestamp.'</i> '.
 		'</span>'. 
 
-		// The content
+	// The content
 		'<p>' . $comment->content .'</p>';
 }
 

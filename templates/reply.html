@@ -3,8 +3,6 @@ if (isset($_SESSION['returned']->response[0])) {
 	$comment = $_SESSION['returned']->response[0];
 	unset($_SESSION['returned']);
 	$closewindow = true;
-	//header('Location: '.BASE_URL.'/id/'.$comment->post_id.'#comment-'.$comment->parent);
-	//exit;
 }
 ?>
 <!DOCTYPE HTML>
@@ -19,8 +17,6 @@ opener.window.location.reload(true);
 window.close();
 </script>
 <?php } ?>
-<center>
 <?php include 'templates/commentbox.html' ?>
-</center>
 </body>
 </html>

@@ -102,9 +102,14 @@ $app->get('/reverse', function() use($app) {
 });
 
 $app->get('/reply/:comment_id', function($comment_id) use($app) {
+	$comments = getCommentsByIds($comment_id);
+	if (empty($comments->response))
+		die('No such comment');
+
 	$data = array(
 		'title' => 'Reply to comment',
-		'parent_comment_id' => $comment_id
+		'comment' => $comments->response[0],
+		'replycomment' => true
 	);
 	$app->render('reply.html',$data);
 });
@@ -132,6 +137,32 @@ $app->get('/tagged/:tags', function($tags) use($app) {
 
 	//$url = BASE_URL.'/api/posts/tagged/'.$tags.'?reverse=true&page='.$page;
 	//render_posts_from_url($url,$page,'Tagged '.$tags.' (page '.$page.')');
+});
+
+$app->get('/editcomment/:id', function($id) use($app) {
+	$comments = getCommentsByIds($id);
+	if (empty($comments->response))
+		die('No such comment');
+	$data = array(
+		'title' => 'Reply to comment',
+		'comment' => $comments->response[0],
+		'editcomment' => true
+	);
+	$app->render('reply.html',$data);
+
+});
+
+$app->get('/deletecomment/:id', function($id) use($app) {
+	$comments = getCommentsByIds($id);
+	if (empty($comments->response))
+		die('Comment deleted!');
+	$comment = $comments->response[0];
+	$data = array(
+		'title' => 'Delete comment',
+		'comment' => $comment,
+		'deletecomment' => true
+	);
+	$app->render('reply.html',$data);
 });
 
 $app->run();

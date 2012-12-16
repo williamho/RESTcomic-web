@@ -1,9 +1,4 @@
 <?php
-if (isset($_SESSION['returned']->errors)) {
-	printErrors($_SESSION['returned']);
-	die();
-}
-
 if (isset($_SESSION['returned']->response[0])) {
 	$post = $_SESSION['returned']->response[0];
 	unset($_SESSION['returned']);
