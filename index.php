@@ -2,8 +2,7 @@
 require_once 'includes/common.php';
 require 'lib/Slim/Slim/Slim.php';
 \Slim\Slim::registerAutoloader();
-
-require_once 'api/includes/config.php';
+reloadUserInfo();
 
 $app = new \Slim\Slim();
 $app->config(array('templates.path'=>'templates'));
@@ -17,7 +16,7 @@ $app->get('/', function() use($app) {
 		$perpage = 1;
 
 	$response = getPostsBetweenIds(null,null,true,1,$page);
-	render_posts_from_api($response,$page,'Posts (page '.$page.')',true);
+	render_posts_from_api($response,$page,$response->response[0]->title,true);
 });
 
 $app->get('/posts/new', function()  use($app) {
@@ -143,9 +142,6 @@ $app->get('/tagged/:tags', function($tags) use($app) {
 		
 	$response = getPostsTagged($tags);
 	render_posts_from_api($response,$page,'Tagged '.$tags.' (page '.$page.')',false);
-
-	//$url = BASE_URL.'/api/posts/tagged/'.$tags.'?reverse=true&page='.$page;
-	//render_posts_from_url($url,$page,'Tagged '.$tags.' (page '.$page.')');
 });
 
 $app->get('/editcomment/:id', function($id) use($app) {
@@ -153,12 +149,31 @@ $app->get('/editcomment/:id', function($id) use($app) {
 	if (empty($comments->response))
 		die('No such comment');
 	$data = array(
-		'title' => 'Reply to comment',
+		'title' => 'Edit comment',
 		'comment' => $comments->response[0],
 		'editcomment' => true
 	);
 	$app->render('reply.html',$data);
+});
 
+$app->get('/editgroup/:id', function($id) use ($app) {
+	$groups = getGroupsByIds($id);
+	if (empty($groups->response))
+		die('No such group');
+	$group = $groups->response[0];
+	$data = array(
+		'title' => 'Edit group '.$group->name,
+		'group' => $group,
+		'editgroup' => true
+	);
+	$app->render('editgroup.html',$data);
+});
+
+$app->get('/newgroup', function() use($app) {
+	$data = array(
+		'title' => 'New group'
+	);
+	$app->render('editgroup.html',$data);
 });
 
 $app->get('/deletecomment/:id', function($id) use($app) {

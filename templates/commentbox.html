@@ -11,6 +11,7 @@ if (!$editcomment) {
 	$oldcomment = new stdClass();
 	$oldcomment->author = new stdClass();
 	$oldcomment->author->name = '';
+	$oldcomment->author->id = 2;
 	$oldcomment->content = '';
 }
 if ($replycomment) {
@@ -25,6 +26,7 @@ else if ($deletecomment) {
 	$apiquery = getAPIQuery('/api/comments/id/'.$comment->id,'DELETE',getCurrentURI()); 
 }
 else {
+	$newcomment = true;
 	$apiquery = getAPIQuery('/api/posts/id/'.$post_id.'/comments','POST',getCurrentURI()); 
 }
 ?>
@@ -60,7 +62,11 @@ if ($editcomment || $replycomment || $deletecomment) {
 }
 
 ?>
-<?php if ($_SESSION['user_id'] == 0) { ?>
+<?php 
+if ((!isset($newcomment) && $comment->author->id == 0) || 
+	(isset($newcomment) && $_SESSION['user_id'] == 0))
+{ 
+?>
 <div>
 <label for="name">Name</label>
 <input type="text" name="name" id="name" class="box_shadow" value="<?php echo $oldcomment->author->name ?>" />

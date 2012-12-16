@@ -2,6 +2,7 @@
 session_start();
 
 define('BASE_URL',getCurrentDir());
+require_once 'api/includes/config.php';
 
 if (!isset($_SESSION['user_id'])) {
 	$json = get_json_from_url(BASE_URL.'/api/users/id/0');
@@ -155,5 +156,15 @@ function get_json_from_url($url) {
 	$data = curl_exec($ch);
 	//curl_close($ch);
 	return json_decode($data);
+}
+
+function reloadUserInfo() {
+	if (!isset($_SESSION['user_id']))
+		$_SESSION['user_id'] = 0;
+	$json = getUsersByIds($_SESSION['user_id']);
+	$user = $json->response[0];
+	$_SESSION['login'] = $user->login;
+	$_SESSION['name'] = $user->name;
+	$_SESSION['group'] = $user->group;
 }
 

@@ -4,14 +4,13 @@ if ($_SESSION['user_id'] == 0) {
 	exit;
 }
 if (isset($_SESSION['returned'])) {	
-	if (!printErrors($_SESSION['returned']) && isset($_SESSION['returned']->response[0])) { // No errors
+	if (empty($_SESSION['returned']->errors) && isset($_SESSION['returned']->response[0])) { // No errors
 		if ($_SESSION['returned']->response[0]->id == $_SESSION['user_id'])
 			$_SESSION['user_name'] = $_SESSION['returned']->response[0]->name;
 		header('Location: '.BASE_URL.'/user/'.$_SESSION['returned']->response[0]->login);
 		unset($_SESSION['returned']); 
 		exit;
 	}	
-	unset($_SESSION['returned']); 
 }
 ?>
 <!DOCTYPE HTML>
@@ -22,6 +21,11 @@ if (isset($_SESSION['returned'])) {
 <?php include 'templates/header.html' ?>
 
 <form class="col col_6" action="<?php echo BASE_URL.'/oauth.php?'.getAPIQuery('/api/users/id/'.$user->id,'PUT',getCurrentURI()) ?>" method="post">
+<?php 
+if (isset($_SESSION['returned'])) { 
+	printErrors($_SESSION['returned']); 
+	unset($_SESSION['returned']);	
+}?>
 <fieldset>	
 <legend>Change Info</legend>
 <div>
@@ -53,10 +57,9 @@ if (isset($_SESSION['returned'])) {
 <label for="group_id">Group</label>
 <select name="group_id" class="box_shadow">
 <?php 
-foreach (array_slice($groups,1) as $group) {
-	echo '<option value="'.$group->id.'">'.$group->name.'</option>';
-}
-?>
+foreach (array_slice($groups,1) as $group) { ?>
+	<option value="<?php echo $group->id ?>" <?php echo ($group->id == $user->group->id) ? 'selected' : '' ?>><?php echo $group->name ?></option>
+<?php } ?>
 </select>
 </div>
 <?php } ?>

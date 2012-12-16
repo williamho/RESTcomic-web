@@ -1,0 +1,88 @@
+<?php
+if (isset($_SESSION['returned']->response[0])) {
+	$comment = $_SESSION['returned']->response[0];
+	header('Location: '.BASE_URL.'/groups');
+	unset($_SESSION['returned']); 
+	exit;
+}
+?>
+<!DOCTYPE HTML>
+<html>
+<?php include 'templates/head.html' ?>
+<body>
+<script type="text/javascript" src="<?php echo BASE_URL ?>/js/jscolor/jscolor.js"></script>
+
+<?php include 'templates/header.html' ?>
+<?php 
+if (!isset($editgroup)) {
+	$editgroup=false;
+	$group = new Group;
+	$group->admin = false;
+	$group->name = '';
+	$group->color = '#000000';
+	$group->permissions = new stdClass();
+	$group->permissions->make_post = 'no';
+	$group->permissions->edit_post = 'no';
+	$group->permissions->make_comment = 'no';
+	$group->permissions->edit_comment = 'no';
+	$apiquery = getAPIQuery('/api/groups','POST',getCurrentURI());
+}
+else {
+	$apiquery = getAPIQuery('/api/groups/id/'.$group->id,'PUT',getCurrentURI());
+}
+?>
+<form class="col col_6" action="<?php echo BASE_URL.'/oauth.php?'.$apiquery ?>" method="post">
+<?php
+if (isset($_SESSION['returned'])) {	
+	printErrors($_SESSION['returned']);	
+	unset($_SESSION['returned']); 
+}
+?>
+<fieldset>	
+<legend>Group info</legend>
+<div>
+<label for="name">Group name</label>
+<input type="text" maxlength="24" name="name" id="name" class="box_shadow" value="<?php echo $group->name ?>" required />
+</div>
+<div>
+<label for="color">Color</label>
+<input type="text" maxlength="7" name="color" id="color" class="color box_shadow" value="<?php echo $group->color ?>" />
+</div>
+<div>
+<label for="admin_perm">Admin</label>
+<input type="hidden" name="admin_perm" value="0" />
+<input type="checkbox" name="admin_perm" value="1" id="admin_perm" <?php echo ($group->admin ? 'checked':''); ?>>
+</div>
+<div>
+<label for="make_post_perm">Make posts</label>
+<input type="hidden" name="make_post_perm" value="0" />
+<input type="checkbox" name="make_post_perm" value="2" id="make_post_perm" <?php echo ($group->permissions->make_post == 'yes') ? 'checked':''; ?>>
+</div>
+<div>
+<label for="edit_post_perm">Edit posts</label>
+<select name="edit_post_perm" class="box_shadow">
+<option value="0" <?php echo ($group->permissions->edit_post == 'no') ? 'selected':'' ?>>No</option>
+<option value="1" <?php echo ($group->permissions->edit_post == 'own') ? 'selected':'' ?>>Own</option>
+<option value="2" <?php echo ($group->permissions->edit_post == 'group') ? 'selected':'' ?>>Group</option>
+<option value="3" <?php echo ($group->permissions->edit_post == 'yes') ? 'selected':'' ?>>Yes</option>
+</select>
+</div>
+<div>
+<label for="make_comment_perm">Make comments</label>
+<input type="hidden" name="make_comment_perm" value="0" />
+<input type="checkbox" name="make_comment_perm" value="2" id="make_comment_perm" <?php echo ($group->permissions->make_comment == 'yes') ? 'checked':''; ?>>
+</div>
+<div>
+<label for="edit_comment_perm">Edit comments</label>
+<select name="edit_comment_perm" class="box_shadow">
+<option value="0" <?php echo ($group->permissions->edit_comment == 'no') ? 'selected':'' ?>>No</option>
+<option value="1" <?php echo ($group->permissions->edit_comment == 'own') ? 'selected':'' ?>>Own</option>
+<option value="2" <?php echo ($group->permissions->edit_comment == 'group') ? 'selected':'' ?>>Group</option>
+<option value="3" <?php echo ($group->permissions->edit_comment == 'yes') ? 'selected':'' ?>>Yes</option>
+</select>
+</div>
+<div>
+<input type="submit" value="Submit &rarr;" />
+</div>
+</fieldset>
+</form>

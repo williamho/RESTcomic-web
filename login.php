@@ -26,7 +26,8 @@ if (!($user = $stmt->fetchObject()))
 	invalidLogin();
 $hash = $user->password;
 if (User::$hasher->checkPassword($pass,$hash)) {
-	$json = get_json_from_url(BASE_URL.'/api/users/id/'.$user->user_id);
+	//$json = get_json_from_url(BASE_URL.'/api/users/id/'.$user->user_id);
+	$json = getUsersByIds($user->user_id);
 
 	setUserInfo(
 		$user->user_id, 

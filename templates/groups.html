@@ -2,10 +2,32 @@
 <html>
 <?php include 'templates/head.html' ?>
 <body>
+<?php if ($_SESSION['group']->admin) {  ?>
+<script>
+function delGroup(url) {
+	if (confirm("Really delete this group?"))
+		window.location.href = url;
+}
+</script>
+<?php } ?>
 <?php include 'templates/header.html' ?>
+<?php 
+function deleteURLForGroup($id) {
+	$apiquery = getAPIQuery('/api/groups/id/'.$id,'DELETE',getCurrentURI());
+	$deleteurl = BASE_URL.'/oauth.php?'.$apiquery;
+	return $deleteurl;
+}
+if (isset($_SESSION['returned'])) {	
+	printErrors($_SESSION['returned']);	
+	unset($_SESSION['returned']); 
+}
+?>
 
 <table border="0">
 	<tr>
+	<?php if ($_SESSION['group']->admin) { ?>
+		<th>Change</th>
+	<?php } ?>
 	<th>ID</th>
 	<th>Name</th>
 	<th>Admin</th>
@@ -19,10 +41,17 @@ function perm_parse($p) {
 	return $p=='no' ? '' : $p;
 }
 
-foreach ($groups as $group) { ?>
+foreach ($groups as $group) { 
+	$group_name = '<b style="color:'.$group->color.'; ">'.$group->name.'</b>';
+?>
 	<tr>
-	<td><?php echo $group->id ?></td>
-	<td><?php echo $group->name ?></td>
+	<?php if ($_SESSION['group']->admin) { ?>
+	<td><center>
+	<a href="<?php echo BASE_URL.'/editgroup/'.$group->id ?>">&#9997;</a> <a href="#" onclick="delGroup('<?php echo deleteURLForGroup($group->id) ?>')">&#215;</a>
+	</center></td>
+	<?php } ?>
+	<th><?php echo $group->id ?></th>
+	<td><?php echo $group_name ?></td>
 	<td><?php echo $group->admin ? 'yes' : '' ?></td>
 	<td><?php echo perm_parse($group->permissions->make_post) ?></td>
 	<td><?php echo perm_parse($group->permissions->edit_post) ?></td>
@@ -30,8 +59,12 @@ foreach ($groups as $group) { ?>
 	<td><?php echo perm_parse($group->permissions->edit_comment) ?></td>
 	</tr>
 <?php }?>
+<?php if ($_SESSION['group']->admin) { ?>
+<tr><td colspan="8">
+<center><a href="<?php echo BASE_URL.'/newgroup' ?>">Create a new group</a></center>
+</td></tr>
+<?php } ?>
 </table>
-
 <div class="clear" style="height:10px;"></div>
 <?php include 'templates/footer.html' ?>
 </body>
