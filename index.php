@@ -140,7 +140,7 @@ $app->get('/tagged/:tags', function($tags) use($app) {
 	if ($page < 1)
 		$page = 1;
 		
-	$response = getPostsTagged($tags);
+	$response = getPostsTagged($tags,0,$page);
 	render_posts_from_api($response,$page,'Tagged '.$tags.' (page '.$page.')',false);
 });
 
@@ -232,7 +232,7 @@ function render_posts_from_api($api,$page,$title,$showcomments=false) {
 	if (isset($api->response[0]))
 		$posts = $api->response;
 	else
-		die("Posts don't exist");
+		die("No more posts for this query");
 
 	$newer_url = (is_null($api->meta->prev)) ? null : '?page='.($page-1);
 	$older_url = (is_null($api->meta->next)) ? null : '?page='.($page+1);
