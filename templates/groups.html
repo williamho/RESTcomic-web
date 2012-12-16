@@ -47,7 +47,9 @@ foreach ($groups as $group) {
 	<tr>
 	<?php if ($_SESSION['group']->admin) { ?>
 	<td><center>
+	<?php if ($group->id > 1) { ?>
 	<a href="<?php echo BASE_URL.'/editgroup/'.$group->id ?>">&#9997;</a> <a href="#" onclick="delGroup('<?php echo deleteURLForGroup($group->id) ?>')">&#215;</a>
+	<?php } ?>
 	</center></td>
 	<?php } ?>
 	<th><?php echo $group->id ?></th>

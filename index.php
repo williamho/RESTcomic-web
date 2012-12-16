@@ -105,7 +105,7 @@ $app->get('/reverse', function() use($app) {
 	if (is_null($perpage))
 		$perpage = 1;
 
-	$response = getPostsBetweenIds(null,null,true,1,$page);
+	$response = getPostsBetweenIds(null,null,false,1,$page);
 	render_posts_from_api($response,$page,'Posts (page '.$page.')',true);
 });
 
