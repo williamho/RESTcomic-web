@@ -4,7 +4,7 @@
 <body>
 <?php include 'templates/header.html' ?>
 	<h2 id="posts"><?php echo $user->name ?> (<?php echo $user->login ?>) 
-	<?php if ($_SESSION['group']->admin) { ?>
+	<?php if ($_SESSION['group']->admin && $user->id != 0) { ?>
 		[<a href="<?php echo BASE_URL.'/user/id/'.$user->id.'/edit' ?>">edit</a>]
 	<?php } else if ($_SESSION['user_id'] == $user->id) { ?>
 		[<a href="<?php echo BASE_URL.'/userinfo' ?>">edit</a>]

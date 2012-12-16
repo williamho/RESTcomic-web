@@ -47,9 +47,17 @@ if (isset($_SESSION['returned'])) {
 <input type='text' name='website' id='website' maxlength="1024" class="box_shadow" value="<?php echo $user->website?>"/>
 </div>
 
-<?php if ($editgroup && $_SESSION['group']->admin) {?>
-<label for='group' >Group ID</label>
-<input type='text' name='group_id' id='group_id' maxlength="3" class="box_shadow" value="<?php echo $user->group->id?>" size="3"/>
+<?php if ($user->id > 1 && $editgroup && $_SESSION['group']->admin) {?>
+<div>
+<?php $groups = getGroups()->response; ?>
+<label for="group_id">Group</label>
+<select name="group_id" class="box_shadow">
+<?php 
+foreach (array_slice($groups,1) as $group) {
+	echo '<option value="'.$group->id.'">'.$group->name.'</option>';
+}
+?>
+</select>
 </div>
 <?php } ?>
 

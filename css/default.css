@@ -22,3 +22,12 @@ footer {text-align:center; color:#666; font-size:0.9em; padding:4px 0px; border-
 .sym { text-decoration:none; }
 img { max-width: 100%; }
 
+form select {
+	-moz-border-radius: 3px; 
+	-webkit-border-radius: 3px; 
+	border-radius:3px; 
+	height:25px; 
+	margin-bottom:5px; 
+	border:1px solid #ccc; 
+	padding:4px 0 1px 5px;
+}

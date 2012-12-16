@@ -75,14 +75,15 @@ $app->get('/userinfo', function() use($app) {
 
 $app->get('/user/id/:id/edit', function($id) use($app) {
 	$url = BASE_URL.'/api/users/id/'.$id.'?getemail=true';
-	$json = get_json_from_url($url);
+	$json = getUsersByIds($id,true);
 
 	if (!isset($json->response[0]))
-		die();
+		die('No such user');
+	$user = $json->response[0];
 
 	$data = array(
 		'title'=>'Change user info',
-		'user'=>$json->response[0],
+		'user'=>$user,
 		'editgroup'=>true
 	);
 	$app->render('edituser.html',$data);
@@ -240,7 +241,7 @@ function render_posts_from_url($url,$page,$title='',$showcomments=false) {
 function render_user_info_id($id) {
 	global $app;
 
-	$users = getUsersById($id);
+	$users = getUsersByIds($id);
 	$users = $users->response;
 
 	if (empty($users))

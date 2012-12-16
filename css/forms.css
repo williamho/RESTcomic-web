@@ -15,7 +15,7 @@ form .textarea textarea {-moz-border-radius: 3px;
 		-webkit-border-radius: 3px; 
 		border-radius:3px; 
 		margin-bottom:5px; 
-		min-height:50px;
+		min-height:80px;
 		border:1px solid #ccc; 
 		padding:4px 0 1px 5px; width:100%;}
 form .textarea {height:auto;}
